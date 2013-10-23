@@ -86,3 +86,81 @@ qsort([H | T]) ->
 perms([]) -> [[]];
 perms(L)  -> [[H | T] || H <- L, T <- perms(L -- [H])].
 ```
+###Unbalance Binary Tree
+```erlang
+-module(binary_tree).
+-compile(export_all).
+tab(0) ->
+	nil;
+tab(D)  ->
+	io:format("\t"),
+	tab(D - 1).
+lookup(Key, nil) ->
+	not_found;
+lookup(Key, {Key, V, _, _}) ->
+	{fond, V};
+lookup(Key, {K, _, Smaller, _}) when Key < K ->
+	lookup(Key, Smaller);
+lookup(Key, {K, _, _, Bigger}) when Key > K ->
+	lookup(Key, Bigger).
+insert(Key, Value, nil) ->
+	{Key, Value, nil, nil};
+% if key exists, update it
+insert(Key, Value, {Key, _, Smaller, Bigger}) ->
+	{Key, Value, Smaller, Bigger};
+insert(Key, Value, {K, V, Smaller, Bigger}) when Key < K ->
+	{K, V, insert(Key, Value, Smaller), Bigger};
+insert(Key, Value, {K, V, Smaller, Bigger}) when Key > K ->
+	{K, V, Smaller, insert(Key, Value, Bigger)}.
+print_tree(T) ->
+	print_tree(T, 0).
+print_tree(nil, D) ->
+	tab(D),
+	io:format("nil~n", []);
+print_tree({Key, Value, Smaller, Bigger}, D) ->
+	D1 = D + 1,
+	print_tree(Bigger, D1),
+	tab(D),
+	io:format("~w ===> ~w~n", [Key, Value]),
+	print_tree(Smaller, D1).
+delete(Key, nil) ->
+	nil;
+delete(Key, {Key, _, nil, nil}) ->
+	nil;
+delete(Key, {Key, _, Smaller, nil}) ->
+	Smaller;
+delete(Key, {Key, _, nil, Bigger}) ->
+	Bigger;
+delete(Key, {K, _, Smaller, Bigger}) when Key == K ->
+	{K2, V2, Smaller2} = delete_sp(Smaller),
+	{K2, V2, Smaller2, Bigger};
+delete(Key, {K, V, Smaller, Bigger}) when Key < K ->
+	{K, V, delete(Key, Smaller), Bigger};
+delete(Key, {K, V, Smaller, Bigger}) when Key > K ->
+	{K, V, Smaller, delete(Key, Bigger)}.
+delete_sp({Key, Value, nil, nil}) ->
+	{Key, Value, nil};
+delete_sp({Key, Value, Smaller, nil}) ->
+	{Key, Value, Smaller};
+delete_sp({Key, Value, Smaller, Bigger}) ->
+	{K2, V2, Bigger2} = delete_sp(Bigger),
+	{K2, V2, {Key, Value, Smaller, Bigger2}}.
+run() ->
+	S1 = nil,
+	S2 = insert(1, joe, S1),
+	S3 = insert(2, fred, S2),
+	S4 = insert(3, jane, S3),
+	S5 = insert(4, kalle, S4),
+	S6 = insert(5, thomas, S5),
+	S7 = insert(6, rickard, S6),
+	S8 = insert(7, susan, S7),
+	S9 = insert(8, tobbe, S8),
+	S10 = insert(9, dan, S9),
+	S11 = insert(10, arvin, S10),
+	S12 = insert(11, den, S11),
+	S13 = insert(12, vn, S12),
+	S14 = insert(13, in, S13),
+	S15 = insert(14, rn, S14),
+	S16 = insert(15, rnn, S15),
+	print_tree(S16).
+```
