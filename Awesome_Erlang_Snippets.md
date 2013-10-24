@@ -72,6 +72,21 @@ prime(N) -> sieve(range(2, N)).
 qsort([]) -> [];   
 qsort([H | T]) -> qsort([X || X <- T, X =< H]) ++ [H] ++ qsort([X || X <- T, X > H]).   
 ```
+###Merge Sort
+```erlang
+-module(merge_sort).
+-compile(export_all).
+split([]) -> [];
+split([H]) -> [H];
+split(L) ->
+	{LL, LR} = lists:split(length(L) div 2, L),
+	merge(split(LL), split(LR)).
+merge(LL, LR) -> merge(LL, LR, []).
+merge(LL, [], L) -> lists:reverse(L, LL);
+merge([], LR, L) -> lists:reverse(L, LR);
+merge([HL | LL], [HR | LR], L) when HL < HR -> merge(LL, [HR | LR], [HL | L]);
+merge(LL, [HR | LR], L) -> merge(LL, LR, [HR | L]).
+```
 ###Full Permutations
 ```erlang
 perms([]) -> [[]];
